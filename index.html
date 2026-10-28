@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0B0E13">
+<title>Överkropp</title>
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect width='180' height='180' fill='%230B0E13'/><rect x='28' y='78' width='124' height='24' rx='12' fill='%23FF7A45'/><rect x='18' y='62' width='26' height='56' rx='10' fill='%23E6EDF3'/><rect x='136' y='62' width='26' height='56' rx='10' fill='%23E6EDF3'/></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230B0E13'/><rect x='14' y='42' width='72' height='14' rx='7' fill='%23FF7A45'/><rect x='8' y='33' width='15' height='32' rx='6' fill='%23E6EDF3'/><rect x='77' y='33' width='15' height='32' rx='6' fill='%23E6EDF3'/></svg>">
+<style>
+:root{color-scheme:dark;
+ --bg:#0B0E13;--bg2:#10151C;--card:#151B24;--card2:#1A2129;--line:#232B36;--line2:#2E3845;
+ --tx:#E8EEF5;--mut:#8A95A3;--dim:#5B6675;
+ --acc:#FF7A45;--accd:#C85A2E;--acc-soft:rgba(255,122,69,.13);
+ --ok:#3FD47E;--ok-soft:rgba(63,212,126,.13);--warn:#E8B339;--warn-soft:rgba(232,179,57,.13);
+ --pr:#FFD24A;--pr-soft:rgba(255,210,74,.15);--r:16px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+input[type=number]{-moz-appearance:textfield;appearance:textfield}
+input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Inter,Helvetica,Arial,sans-serif;
+ font-feature-settings:"tnum" 1;-webkit-font-smoothing:antialiased;padding-bottom:env(safe-area-inset-bottom)}
+header{background:linear-gradient(180deg,#121823,var(--bg));padding:max(16px,env(safe-area-inset-top)) 18px 0;position:sticky;top:0;z-index:20;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+h1{margin:0;font-size:19px;font-weight:650;letter-spacing:-.025em}
+.sub{color:var(--dim);font-size:12px;font-weight:500}
+.sub b{color:var(--acc)}
+nav{display:flex;gap:4px;margin-top:14px}
+nav button{flex:1;background:none;border:0;color:var(--dim);padding:9px 2px 11px;font:inherit;font-size:13px;font-weight:550;cursor:pointer;position:relative;transition:color .15s}
+nav button.on{color:var(--tx)}
+nav button.on::after{content:"";position:absolute;left:14%;right:14%;bottom:0;height:2.5px;background:var(--acc);border-radius:3px 3px 0 0}
+main{padding:16px 18px 120px;max-width:760px;margin:0 auto}
+.days{display:flex;gap:8px;overflow-x:auto;padding:2px 18px 14px;margin:0 -18px;scrollbar-width:none}
+.days::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;background:var(--card);border:1px solid var(--line);border-radius:13px;padding:9px 13px;cursor:pointer;color:var(--mut);text-align:left;font:inherit;transition:.15s;min-width:104px}
+.chip b{display:block;font-size:11px;font-weight:650;letter-spacing:.07em;text-transform:uppercase;color:var(--dim)}
+.chip span{display:block;font-size:13.5px;font-weight:550;margin-top:2px;white-space:nowrap}
+.chip.on{background:var(--acc-soft);border-color:var(--acc);color:var(--tx)}
+.chip.on b{color:var(--acc)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-bottom:12px}
+.h2{font-size:17px;font-weight:650;letter-spacing:-.02em;margin:0}
+.hs{color:var(--mut);font-size:13px;margin:4px 0 0;line-height:1.45}
+.sect{font-size:11px;font-weight:650;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin:22px 0 9px;padding:0 2px}
+
+.ex{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px 14px 11px;margin-bottom:10px;transition:border-color .3s,box-shadow .3s}
+.ex.done{border-color:rgba(63,212,126,.5)}
+.ex.haspr{border-color:rgba(255,210,74,.55);box-shadow:0 0 0 1px rgba(255,210,74,.12),0 4px 22px -8px rgba(255,210,74,.35)}
+.ex-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:11px}
+.ex-n{font-size:15px;font-weight:600;letter-spacing:-.015em;line-height:1.25}
+.ex-m{color:var(--dim);font-size:11.5px;margin-top:3px}
+.ex-s{flex:0 0 auto;background:var(--card2);border-radius:8px;padding:3px 8px;font-size:11px;font-weight:650;color:var(--mut)}
+.ex.done .ex-s{background:var(--ok-soft);color:var(--ok)}
+.ex.haspr .ex-s{background:var(--pr-soft);color:var(--pr)}
+.hd{display:grid;grid-template-columns:26px 1fr 1fr 30px;gap:7px;padding:0 0 5px;font-size:9.5px;font-weight:650;letter-spacing:.09em;text-transform:uppercase;color:var(--dim)}
+.hd span:nth-child(2),.hd span:nth-child(3){text-align:center}
+.st{display:grid;grid-template-columns:26px 1fr 1fr 30px;gap:7px;align-items:center;margin-bottom:6px}
+.st-n{width:26px;height:30px;border-radius:8px;background:var(--bg2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:650;color:var(--dim);transition:.25s}
+.st.ok .st-n{background:var(--ok-soft);border-color:rgba(63,212,126,.35);color:var(--ok)}
+.st.pr .st-n{background:var(--pr-soft);border-color:rgba(255,210,74,.45);color:var(--pr)}
+.st input{width:100%;background:var(--bg2);border:1px solid var(--line);border-radius:9px;padding:7px 8px;color:var(--tx);font:inherit;font-size:16px;font-weight:600;text-align:center;transition:.15s}
+.st input:focus{outline:0;border-color:var(--acc);background:#131A22}
+.st input::placeholder{color:#39424F;font-weight:500}
+.st.ok input{border-color:rgba(63,212,126,.28)}
+.st.pr input{border-color:rgba(255,210,74,.35)}
+.tick{width:30px;text-align:center;font-size:13px;color:var(--dim);font-weight:700}
+.st.ok .tick{color:var(--ok)}
+.st.pr .tick{color:var(--pr);font-size:9.5px;letter-spacing:.06em}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.14)}100%{transform:scale(1)}}
+.pop{animation:pop .4s cubic-bezier(.3,1.6,.5,1)}
+.ex-f{display:flex;justify-content:space-between;align-items:center;margin-top:9px;padding-top:9px;border-top:1px solid var(--line);font-size:12px;color:var(--dim);font-weight:550}
+.ex-f b{color:var(--tx);font-weight:650}
+.ex.done .ex-f b.flag{color:var(--ok)}
+.ex.haspr .ex-f b.flag{color:var(--pr)}
+
+.sum{background:linear-gradient(135deg,#171F2A,#141A22);border:1px solid var(--line2);border-radius:var(--r);padding:16px;margin:14px 0 12px;display:flex;align-items:center;gap:16px}
+.sum-t{flex:1;min-width:0}
+.sum .l{font-size:10.5px;font-weight:650;letter-spacing:.09em;text-transform:uppercase;color:var(--dim)}
+.sum .v{font-size:31px;font-weight:700;letter-spacing:-.035em;margin:3px 0 0;line-height:1}
+.sum .d{font-size:12.5px;color:var(--mut);margin-top:6px}
+.sum .d b.up{color:var(--ok)}.sum .d b.dn{color:var(--warn)}
+.ring{flex:0 0 64px;width:64px;height:64px;position:relative}
+.ring svg{transform:rotate(-90deg)}
+.ring .rt{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;letter-spacing:-.02em}
+.btn{background:var(--acc);color:#140B06;border:0;padding:14px 20px;border-radius:13px;font:inherit;font-size:15px;font-weight:650;cursor:pointer;transition:.12s;flex:1}
+.btn:active{transform:scale(.985);filter:brightness(.93)}
+.btn.g{background:var(--card2);color:var(--tx);border:1px solid var(--line2);flex:0 0 auto;padding:14px 17px}
+.btn.d{background:none;color:#E5534B;border:1px solid rgba(229,83,75,.35)}
+.row{display:flex;gap:9px}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font-size:10px;font-weight:650;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);padding:0 4px 9px;border-bottom:1px solid var(--line)}
+td{padding:11px 4px;border-bottom:1px solid var(--line);font-size:14px}
+tr:last-child td{border-bottom:0}
+.pct{font-size:12px;font-weight:650;padding:3px 8px;border-radius:7px;white-space:nowrap}
+.pct.u{background:var(--ok-soft);color:var(--ok)}.pct.n{background:var(--card2);color:var(--mut)}.pct.d{background:var(--warn-soft);color:var(--warn)}
+.si{width:50px;background:var(--bg2);border:1px solid var(--line);border-radius:9px;padding:8px 4px;color:var(--tx);font:inherit;font-size:14px;font-weight:600;text-align:center}
+.si:focus{outline:0;border-color:var(--acc)}
+.ti{width:100%;background:var(--bg2);border:1px solid var(--line);border-radius:9px;padding:8px 10px;color:var(--tx);font:inherit;font-size:13.5px}
+.ti:focus{outline:0;border-color:var(--acc)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}
+.kpi .l{font-size:10.5px;font-weight:650;letter-spacing:.09em;text-transform:uppercase;color:var(--dim)}
+.kpi .v{font-size:25px;font-weight:700;letter-spacing:-.03em;margin-top:3px;line-height:1.1}
+.vol{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}
+.vol:last-child{border:0}
+.vol-n{flex:0 0 86px;font-size:13.5px;font-weight:550}
+.vol-b{flex:1;height:7px;background:var(--line);border-radius:4px;overflow:hidden}
+.vol-b i{display:block;height:100%;background:linear-gradient(90deg,var(--accd),var(--acc));border-radius:4px}
+.vol-v{flex:0 0 54px;text-align:right;font-size:13px;font-weight:650;color:var(--mut)}
+.ms{background:linear-gradient(135deg,rgba(255,210,74,.09),rgba(255,122,69,.05));border:1px solid rgba(255,210,74,.22);border-radius:var(--r);padding:15px;margin-bottom:12px}
+.ms .t{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:9px}
+.ms .n{font-size:22px;font-weight:700;letter-spacing:-.03em}
+.ms .g{font-size:12px;color:var(--mut);font-weight:550}
+.ms .b{height:8px;background:rgba(255,255,255,.07);border-radius:5px;overflow:hidden}
+.ms .b i{display:block;height:100%;background:linear-gradient(90deg,var(--acc),var(--pr));border-radius:5px;transition:width .8s cubic-bezier(.3,1,.4,1)}
+.empty{text-align:center;padding:46px 18px;color:var(--mut)}
+.empty .ic{width:46px;height:46px;margin:0 auto 14px;border-radius:14px;background:var(--card2);display:flex;align-items:center;justify-content:center}
+.empty h3{margin:0 0 5px;font-size:16px;font-weight:650;color:var(--tx)}
+.empty p{margin:0;font-size:13.5px}
+.note{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:12px 13px;font-size:12.5px;color:var(--mut);line-height:1.5;margin-top:12px}
+.note b{color:var(--tx);font-weight:600}
+.warnbox{background:var(--warn-soft);border:1px solid rgba(232,179,57,.3);color:var(--warn);padding:12px 13px;border-radius:12px;font-size:13px;margin-bottom:13px}
+#toast{position:fixed;left:50%;bottom:calc(26px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(90px);background:#E8EEF5;color:#0B0E13;padding:12px 20px;border-radius:14px;font-size:13.5px;font-weight:600;transition:transform .28s cubic-bezier(.3,1.3,.6,1);pointer-events:none;z-index:50;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+#toast.show{transform:translateX(-50%) translateY(0)}
+#ovl{position:fixed;inset:0;background:rgba(5,8,12,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);z-index:60;display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;pointer-events:none;transition:opacity .25s}
+#ovl.show{opacity:1;pointer-events:auto}
+.done-c{width:100%;max-width:360px;background:linear-gradient(160deg,#1B2430,#131922);border:1px solid var(--line2);border-radius:22px;padding:26px 22px;text-align:center;transform:scale(.92);transition:transform .35s cubic-bezier(.3,1.5,.5,1)}
+#ovl.show .done-c{transform:scale(1)}
+.done-c .big{font-size:42px;font-weight:750;letter-spacing:-.04em;line-height:1;margin:14px 0 2px}
+.done-c .unit{font-size:14px;color:var(--mut);font-weight:600}
+.done-c h3{margin:0;font-size:12px;font-weight:650;letter-spacing:.1em;text-transform:uppercase;color:var(--acc)}
+.done-r{display:flex;gap:9px;margin:20px 0}
+.done-r div{flex:1;background:rgba(255,255,255,.045);border-radius:12px;padding:11px 6px}
+.done-r .n{font-size:19px;font-weight:700;letter-spacing:-.02em}
+.done-r .l{font-size:9.5px;font-weight:650;letter-spacing:.07em;text-transform:uppercase;color:var(--dim);margin-top:3px}
+.prlist{background:var(--pr-soft);border:1px solid rgba(255,210,74,.3);border-radius:12px;padding:11px 13px;margin-bottom:18px;text-align:left}
+.prlist .t{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pr);margin-bottom:6px}
+.prlist div.i{font-size:12.5px;color:var(--tx);line-height:1.6}
+svg.spk{display:block;width:72px;height:24px}
+.x{background:none;border:0;color:var(--dim);font-size:17px;cursor:pointer;padding:4px 7px}
+.prtag{background:var(--pr-soft);color:var(--pr);font-size:9.5px;font-weight:700;letter-spacing:.06em;padding:2px 6px;border-radius:6px;margin-left:6px;vertical-align:1px}
+#tmr{position:fixed;left:0;right:0;bottom:0;z-index:45;background:rgba(17,23,31,.96);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+ border-top:1px solid var(--line2);padding:11px 18px calc(11px + env(safe-area-inset-bottom));transform:translateY(120%);transition:transform .3s cubic-bezier(.3,1.2,.5,1)}
+#tmr.show{transform:translateY(0)}
+#tmr.klar{background:rgba(26,43,30,.97);border-top-color:rgba(63,212,126,.5)}
+.tb{height:3px;background:var(--line);border-radius:2px;overflow:hidden;margin-bottom:10px}
+.tb i{display:block;height:100%;background:var(--acc);border-radius:2px;transition:width 1s linear}
+#tmr.klar .tb i{background:var(--ok)}
+.tr{display:flex;align-items:center;gap:12px}
+.tr .nm{flex:1;min-width:0}
+.tr .nm .l{font-size:10px;font-weight:650;letter-spacing:.09em;text-transform:uppercase;color:var(--dim)}
+.tr .nm .e{font-size:13.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+.tr .t{font-size:30px;font-weight:700;letter-spacing:-.035em;font-variant-numeric:tabular-nums;min-width:74px;text-align:right}
+#tmr.klar .tr .t{color:var(--ok)}
+.tr .b{display:flex;gap:7px}
+.tr .b button{background:var(--card2);border:1px solid var(--line2);color:var(--tx);border-radius:10px;padding:9px 12px;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+.tr .b button:active{filter:brightness(1.25)}
+@media(min-width:620px){.grid{grid-template-columns:repeat(4,1fr)}}
+</style>
+</head>
+<body>
+<header><div class="brand"><h1>Överkropp</h1><div class="sub" id="sub">—</div></div>
+<nav><button data-v="train" class="on">Träna</button><button data-v="prog">Progression</button><button data-v="cfg">Program</button><button data-v="data">Data</button></nav></header>
+<main id="app"></main><div id="toast"></div>
+<div id="tmr"><div class="tb"><i></i></div><div class="tr">
+<div class="nm"><div class="l" id="tl">Vila</div><div class="e" id="te">—</div></div>
+<div class="t" id="tt">0:00</div><div class="b"><button id="tp">+30s</button><button id="tx">Klar</button></div></div></div>
+<div id="ovl"><div class="done-c" id="donec"></div></div>
+<script>
+"use strict";
+var KEY="overkropp5_v1";
+var PROGRAM=[
+ {id:"d1",namn:"Bröst & rygg",kort:"Bröst/rygg",ex:[
+  {id:"brostpress",namn:"Bröstpress",mus:"Bröst",set:4,lo:6,hi:10,typ:"bas"},
+  {id:"lut_hantel",namn:"Lutande bänkpress, hantlar",mus:"Bröst",set:3,lo:8,hi:12,typ:"bas"},
+  {id:"cable_flyes",namn:"Cable flyes",mus:"Bröst",set:3,lo:10,hi:15,typ:"iso"},
+  {id:"pullups",namn:"Assisted pullups",mus:"Rygg",set:4,lo:6,hi:10,typ:"bas"},
+  {id:"iso_row",namn:"Iso-Lateral Row",mus:"Rygg",set:3,lo:8,hi:12,typ:"bas"},
+  {id:"nedre_rygg",namn:"Nedre rygg",mus:"Nedre rygg",set:3,lo:10,hi:15,typ:"iso"}]},
+ {id:"d2",namn:"Axlar & triceps",kort:"Axlar/tri",ex:[
+  {id:"sidolyft",namn:"Sidolyft, hantlar",mus:"Axlar",set:4,lo:12,hi:15,typ:"iso"},
+  {id:"axelpress",namn:"Axelpress, hantlar",mus:"Axlar",set:4,lo:6,hi:10,typ:"bas"},
+  {id:"face_pull",namn:"Face pulls",mus:"Axlar",set:3,lo:15,hi:20,typ:"iso"},
+  {id:"pushdown",namn:"Triceps pushdown, rep",mus:"Triceps",set:3,lo:10,hi:15,typ:"iso"},
+  {id:"overhead_tri",namn:"Overhead triceps",mus:"Triceps",set:3,lo:10,hi:15,typ:"iso"}]},
+ {id:"d3",namn:"Rygg & biceps",kort:"Rygg/bi",ex:[
+  {id:"pullups",namn:"Assisted pullups",mus:"Rygg",set:4,lo:6,hi:10,typ:"bas"},
+  {id:"iso_row",namn:"Iso-Lateral Row",mus:"Rygg",set:4,lo:8,hi:12,typ:"bas"},
+  {id:"nedre_rygg",namn:"Nedre rygg",mus:"Nedre rygg",set:3,lo:10,hi:15,typ:"iso"},
+  {id:"curl",namn:"Bicepscurl, hantlar",mus:"Biceps",set:3,lo:8,hi:12,typ:"iso"},
+  {id:"hammer",namn:"Hammercurl",mus:"Biceps",set:2,lo:10,hi:15,typ:"iso"},
+  {id:"btb_curl",namn:"Behind the back curl",mus:"Biceps",set:2,lo:10,hi:15,typ:"iso"}]},
+ {id:"d4",namn:"Bröst & axlar",kort:"Bröst/axlar",ex:[
+  {id:"brostpress",namn:"Bröstpress",mus:"Bröst",set:4,lo:6,hi:10,typ:"bas"},
+  {id:"lut_hantel",namn:"Lutande bänkpress, hantlar",mus:"Bröst",set:3,lo:8,hi:12,typ:"bas"},
+  {id:"cable_flyes",namn:"Cable flyes",mus:"Bröst",set:2,lo:10,hi:15,typ:"iso"},
+  {id:"sidolyft",namn:"Sidolyft, hantlar",mus:"Axlar",set:3,lo:12,hi:15,typ:"iso"},
+  {id:"axelpress",namn:"Axelpress, hantlar",mus:"Axlar",set:3,lo:6,hi:10,typ:"bas"},
+  {id:"face_pull",namn:"Face pulls",mus:"Axlar",set:2,lo:15,hi:20,typ:"iso"}]},
+ {id:"d5",namn:"Armar & traps",kort:"Armar",ex:[
+  {id:"curl",namn:"Bicepscurl, hantlar",mus:"Biceps",set:3,lo:8,hi:12,typ:"iso"},
+  {id:"hammer",namn:"Hammercurl",mus:"Biceps",set:2,lo:10,hi:15,typ:"iso"},
+  {id:"btb_curl",namn:"Behind the back curl",mus:"Biceps",set:2,lo:10,hi:15,typ:"iso"},
+  {id:"pushdown",namn:"Triceps pushdown, rep",mus:"Triceps",set:3,lo:10,hi:15,typ:"iso"},
+  {id:"overhead_tri",namn:"Overhead triceps",mus:"Triceps",set:2,lo:10,hi:15,typ:"iso"},
+  {id:"shrugs",namn:"Shrugs",mus:"Traps",set:3,lo:10,hi:15,typ:"iso"}]}];
+var MILS=[1,5,10,25,50,100,200,500];
+
+var db={pass:[],cfg:{},namn:{}},canSave=true;
+try{var raw=localStorage.getItem(KEY);if(raw)db=JSON.parse(raw);}catch(e){canSave=false;}
+if(!db.pass)db.pass=[];if(!db.cfg)db.cfg={};if(!db.namn)db.namn={};
+db.pass.forEach(function(p){Object.keys(p.ex||{}).forEach(function(k){var o=p.ex[k];
+ if(o&&!o.sets&&o.kg!=null&&o.reps!=null)p.ex[k]={sets:[{kg:o.kg,reps:o.reps}]};});});
+function save(){if(!canSave)return;try{localStorage.setItem(KEY,JSON.stringify(db));}catch(e){canSave=false;}}
+function toast(t){var e=document.getElementById("toast");e.textContent=t;e.className="show";clearTimeout(e._t);e._t=setTimeout(function(){e.className="";},1900);}
+function nf(n,d){return(n==null||isNaN(n))?"—":Number(n).toFixed(d==null?1:d).replace(".",",").replace(/,0$/,"");}
+function kf(n){return Math.round(n).toLocaleString("sv-SE");}
+function iso(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+function dag(i){return PROGRAM.filter(function(x){return x.id===i;})[0];}
+function dagCfg(d,e){var k=d+"."+e,c=db.cfg[k];if(c)return c;
+ var x=dag(d).ex.filter(function(y){return y.id===e;})[0];return{set:x.set,lo:x.lo,hi:x.hi};}
+function nm(i,f){return db.namn[i]||f;}
+function vol(o){if(!o||!o.sets)return 0;return o.sets.reduce(function(a,s){return a+((s&&s.kg!=null&&s.reps!=null)?s.kg*s.reps:0);},0);}
+function antalSet(o){if(!o||!o.sets)return 0;return o.sets.filter(function(s){return s&&s.kg!=null&&s.reps!=null;}).length;}
+function passAv(d){return db.pass.filter(function(p){return p.dag===d;}).sort(function(a,b){return a.datum<b.datum?-1:1;});}
+function senaste(d){var a=passAv(d);return a.length?a[a.length-1]:null;}
+function allaFor(i){var o=[];db.pass.forEach(function(p){if(p.ex&&p.ex[i]&&vol(p.ex[i])>0)o.push({datum:p.datum,v:vol(p.ex[i])});});
+ return o.sort(function(a,b){return a.datum<b.datum?-1:1;});}
+function klarOvn(o,c){if(!o||!o.sets)return false;var n=0;
+ for(var i=0;i<c.set;i++){var s=o.sets[i];if(s&&s.reps!=null&&s.reps>=c.hi)n++;}return n===c.set;}
+function bastaKg(exid){var m=0;db.pass.forEach(function(p){var o=p.ex&&p.ex[exid];if(o&&o.sets)o.sets.forEach(function(s){
+ if(s&&s.kg!=null&&s.reps!=null&&s.kg>m)m=s.kg;});});return m;}
+function bastaVol(exid){var m=0;db.pass.forEach(function(p){var v=vol(p.ex&&p.ex[exid]);if(v>m)m=v;});return m;}
+function totTon(){var t=0;db.pass.forEach(function(p){Object.keys(p.ex).forEach(function(k){t+=vol(p.ex[k]);});});return t/1000;}
+function veckoNr(ds){var d=new Date(ds);var t=new Date(d.valueOf());t.setDate(t.getDate()+3-((d.getDay()+6)%7));
+ var f=new Date(t.getFullYear(),0,4);return t.getFullYear()*100+1+Math.round(((t-f)/864e5-3+((f.getDay()+6)%7))/7);}
+function streak(){
+ if(!db.pass.length)return 0;
+ var v={};db.pass.forEach(function(p){v[veckoNr(p.datum)]=1;});
+ var nu=veckoNr(iso(new Date())),k=nu,n=0;
+ if(!v[k]){k=k-1;if(String(k).slice(-2)==="00")k=k-100+52;if(!v[k])return 0;}
+ while(v[k]){n++;k=k-1;if(String(k).slice(-2)==="00")k=k-100+52;}
+ return n;}
+
+var view="train",vald="d1",ut={},startad={};
+function typFor(d,e){var k=d+"."+e+".typ",c=db.cfg[k];if(c)return c;
+ var x=dag(d).ex.filter(function(y){return y.id===e;})[0];return x.typ;}
+function vilaFor(d,e){var k=d+"."+e+".vila",c=db.cfg[k];if(c!=null)return c;
+ return typFor(d,e)==="bas"?120:60;}
+var T={kvar:0,tot:0,iv:null,ac:null};
+function pip(n){try{if(!T.ac)T.ac=new (window.AudioContext||window.webkitAudioContext)();
+ var c=T.ac;for(var i=0;i<n;i++){var o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);
+ o.frequency.value=880;g.gain.setValueAtTime(.0001,c.currentTime+i*.18);
+ g.gain.exponentialRampToValueAtTime(.22,c.currentTime+i*.18+.01);
+ g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+i*.18+.14);
+ o.start(c.currentTime+i*.18);o.stop(c.currentTime+i*.18+.15);}}catch(e){}}
+function visaT(){var b=document.getElementById("tmr");
+ document.getElementById("tt").textContent=Math.floor(T.kvar/60)+":"+String(T.kvar%60).padStart(2,"0");
+ b.querySelector(".tb i").style.width=(T.tot?T.kvar/T.tot*100:0)+"%";}
+function startaT(sek,namn){
+ clearInterval(T.iv);T.kvar=sek;T.tot=sek;
+ var b=document.getElementById("tmr");b.classList.remove("klar");b.classList.add("show");
+ document.getElementById("tl").textContent="Vila "+Math.round(sek/60*10)/10+" min";
+ document.getElementById("te").textContent=namn;visaT();
+ T.iv=setInterval(function(){T.kvar--;visaT();
+  if(T.kvar<=0){clearInterval(T.iv);b.classList.add("klar");
+   document.getElementById("tl").textContent="Vila klar";
+   document.getElementById("tt").textContent="Kör";
+   if(navigator.vibrate)navigator.vibrate([90,70,90,70,160]);pip(3);
+   setTimeout(function(){b.classList.remove("show");},9000);}},1000);}
+function stoppaT(){clearInterval(T.iv);document.getElementById("tmr").classList.remove("show");}
+(function(){var s=db.pass.slice().sort(function(a,b){return a.datum<b.datum?-1:1;}).pop();
+ if(s){var i=PROGRAM.map(function(d){return d.id;}).indexOf(s.dag);vald=PROGRAM[(i+1)%5].id;}})();
+function U(id,n){if(!ut[id])ut[id]={sets:[]};while(ut[id].sets.length<n)ut[id].sets.push({});return ut[id];}
+
+function render(){
+ var st=streak();
+ document.getElementById("sub").innerHTML=db.pass.length?
+  (db.pass.length+" pass"+(st>1?' · <b>'+st+' v i rad</b>':"")):"5 dagar · 2× frekvens";
+ var h=canSave?"":'<div class="warnbox"><b>Sparning fungerar inte här.</b> Öppna i Safari.</div>';
+ document.getElementById("app").innerHTML=h+({train:vTrain,prog:vProg,cfg:vCfg,data:vData}[view])();
+ bind();
+}
+function chips(){return '<div class="days">'+PROGRAM.map(function(d,i){
+ return '<button class="chip'+(d.id===vald?" on":"")+'" data-dag="'+d.id+'"><b>Dag '+(i+1)+'</b><span>'+d.kort+'</span></button>';}).join("")+'</div>';}
+function ring(p){var r=27,c=2*Math.PI*r,o=c*(1-p/100);
+ return '<div class="ring"><svg width="64" height="64"><circle cx="32" cy="32" r="'+r+'" fill="none" stroke="#232B36" stroke-width="5"/>'+
+ '<circle cx="32" cy="32" r="'+r+'" fill="none" stroke="'+(p>=100?"#3FD47E":"#FF7A45")+'" stroke-width="5" stroke-linecap="round" stroke-dasharray="'+c.toFixed(1)+'" stroke-dashoffset="'+o.toFixed(1)+'" style="transition:stroke-dashoffset .6s cubic-bezier(.3,1,.4,1)"/></svg>'+
+ '<div class="rt">'+Math.round(p)+'%</div></div>';}
+
+function vTrain(){
+ var d=dag(vald),prev=senaste(vald),s=chips(),tot=0,ptot=0,klara=0,fyl=0,maxs=0,prn=0;
+ var body=d.ex.map(function(e){
+  var c=dagCfg(d.id,e.id),o=U(e.id,c.set),p=prev&&prev.ex?prev.ex[e.id]:null;
+  var bKg=bastaKg(e.id),bVol=bastaVol(e.id);
+  tot+=vol(o);if(p)ptot+=vol(p);maxs+=c.set;fyl+=Math.min(antalSet(o),c.set);
+  var done=klarOvn(o,c);if(done)klara++;
+  var volPR=bVol>0&&vol(o)>bVol;if(volPR)prn++;
+  var ref="ingen historik";
+  if(p&&p.sets&&p.sets.length){var kgs=p.sets.filter(function(x){return x&&x.kg!=null;}).map(function(x){return x.kg;});
+   var sam=kgs.length&&kgs.every(function(x){return x===kgs[0];});
+   ref="förra "+(sam?nf(kgs[0])+" kg × "+p.sets.map(function(x){return x&&x.reps!=null?x.reps:"–";}).join(", ")
+    :p.sets.map(function(x){return x&&x.kg!=null?nf(x.kg)+"×"+x.reps:"–";}).join("  "));}
+  var rader="";
+  for(var i=0;i<c.set;i++){
+   var t=o.sets[i]||{},pst=(p&&p.sets)?p.sets[i]:null;
+   var ok=t.reps!=null&&t.reps>=c.hi, pr=bKg>0&&t.kg!=null&&t.reps!=null&&t.kg>bKg&&t.reps>=c.lo;
+   if(pr)prn++;
+   rader+='<div class="st'+(pr?" pr":(ok?" ok":""))+'" data-strow="'+e.id+'|'+i+'">'+
+    '<div class="st-n">'+(i+1)+'</div>'+
+    '<input type="number" step="0.5" inputmode="decimal" data-ex="'+e.id+'" data-i="'+i+'" data-f="kg" value="'+(t.kg!=null?t.kg:"")+'" placeholder="'+(pst&&pst.kg!=null?nf(pst.kg):"kg")+'">'+
+    '<input type="number" inputmode="numeric" data-ex="'+e.id+'" data-i="'+i+'" data-f="reps" value="'+(t.reps!=null?t.reps:"")+'" placeholder="'+(pst&&pst.reps!=null?pst.reps:"rep")+'">'+
+    '<div class="tick">'+(pr?"PR":(ok?"✓":""))+'</div></div>';}
+  return '<div class="ex'+(volPR?" haspr":(done?" done":""))+'" data-card="'+e.id+'">'+
+   '<div class="ex-top"><div><div class="ex-n">'+esc(nm(e.id,e.namn))+(volPR?'<span class="prtag">REKORD</span>':"")+'</div>'+
+   '<div class="ex-m">'+c.lo+'–'+c.hi+' rep · '+ref+'</div></div><div class="ex-s">'+c.set+' SET</div></div>'+
+   '<div class="hd"><span></span><span>Vikt</span><span>Reps</span><span></span></div>'+rader+
+   '<div class="ex-f"><span>Volym <b class="v">'+kf(vol(o))+'</b> kg</span><b class="flag">'+(done?"Höj vikten":antalSet(o)+"/"+c.set+" set")+'</b></div></div>';}).join("");
+ var dl=ptot?(tot/ptot-1)*100:null,pc=maxs?fyl/maxs*100:0;
+ s+='<div class="sum"><div class="sum-t"><div class="l">'+esc(d.namn)+'</div><div class="v">'+kf(tot)+' kg</div><div class="d">'+
+   (ptot?'förra '+kf(ptot)+' kg · <b class="'+(tot>=ptot?"up":"dn")+'">'+(tot>=ptot?"+":"")+nf(dl,1)+' %</b>':'första passet av den här typen')+
+   (prn?' · <b style="color:var(--pr)">'+prn+' rekord</b>':' · '+klara+'/'+d.ex.length+' klara')+'</div></div>'+ring(pc)+'</div>'+body;
+ s+='<div class="row" style="margin-top:14px"><button class="btn" id="spara">Spara passet</button><button class="btn g" id="rensa">Rensa</button></div>';
+ var hist=passAv(vald);
+ if(hist.length){
+  s+='<div class="sect">Tidigare · '+esc(d.namn)+'</div><div class="card"><table>';
+  hist.slice().reverse().slice(0,8).forEach(function(p){var v=0;d.ex.forEach(function(e){v+=vol(p.ex[e.id]);});
+   s+='<tr><td style="color:var(--mut)">'+p.datum+'</td><td style="text-align:right;font-weight:650">'+kf(v)+' kg</td>'+
+      '<td style="width:34px;text-align:right"><button class="x" data-del="'+p.datum+'|'+p.dag+'">✕</button></td></tr>';});
+  s+='</table></div>';}
+ return s;
+}
+function omrakna(fokus){
+ var d=dag(vald),prev=senaste(vald),tot=0,ptot=0,k=0,fyl=0,maxs=0,prn=0;
+ d.ex.forEach(function(e){
+  var c=dagCfg(d.id,e.id),o=U(e.id,c.set),v=vol(o),bKg=bastaKg(e.id),bVol=bastaVol(e.id);
+  tot+=v;if(prev&&prev.ex)ptot+=vol(prev.ex[e.id]);maxs+=c.set;fyl+=Math.min(antalSet(o),c.set);
+  var done=klarOvn(o,c);if(done)k++;
+  var volPR=bVol>0&&v>bVol;if(volPR)prn++;
+  var card=document.querySelector('[data-card="'+e.id+'"]');if(!card)return;
+  card.classList.toggle("done",done&&!volPR);card.classList.toggle("haspr",volPR);
+  var tagg=card.querySelector(".prtag");
+  if(volPR&&!tagg){card.querySelector(".ex-n").insertAdjacentHTML("beforeend",'<span class="prtag">REKORD</span>');}
+  else if(!volPR&&tagg)tagg.remove();
+  card.querySelector(".ex-f .v").textContent=kf(v);
+  card.querySelector(".ex-f .flag").textContent=done?"Höj vikten":antalSet(o)+"/"+c.set+" set";
+  for(var i=0;i<c.set;i++){var t=o.sets[i]||{},row=card.querySelector('[data-strow="'+e.id+'|'+i+'"]');if(!row)continue;
+   var ok=t.reps!=null&&t.reps>=c.hi,pr=bKg>0&&t.kg!=null&&t.reps!=null&&t.kg>bKg&&t.reps>=c.lo;
+   if(pr)prn++;
+   var fore=row.classList.contains("ok")||row.classList.contains("pr");
+   row.classList.toggle("ok",ok&&!pr);row.classList.toggle("pr",pr);
+   row.querySelector(".tick").textContent=pr?"PR":(ok?"✓":"");
+   if((ok||pr)&&!fore){var n=row.querySelector(".st-n");n.classList.remove("pop");void n.offsetWidth;n.classList.add("pop");
+    if(navigator.vibrate)navigator.vibrate(pr?[14,40,14]:12);}}});
+ var sum=document.querySelector(".sum");
+ if(sum){sum.querySelector(".v").textContent=kf(tot)+" kg";
+  var dl=ptot?(tot/ptot-1)*100:null;
+  sum.querySelector(".d").innerHTML=(ptot?'förra '+kf(ptot)+' kg · <b class="'+(tot>=ptot?"up":"dn")+'">'+(tot>=ptot?"+":"")+nf(dl,1)+' %</b>':'första passet av den här typen')+
+   (prn?' · <b style="color:var(--pr)">'+prn+' rekord</b>':' · '+k+'/'+d.ex.length+' klara');
+  var pc=maxs?fyl/maxs*100:0,r=sum.querySelector(".ring");
+  if(r){r.outerHTML=ring(pc);} }
+}
+function klarRuta(st){
+ var c=document.getElementById("donec"),o=document.getElementById("ovl");
+ var pr=st.pr.length;
+ c.innerHTML='<h3>'+(pr?"Nytt rekord":"Pass klart")+'</h3>'+
+  '<div class="big">'+kf(st.vol)+'</div><div class="unit">kg total volym</div>'+
+  '<div class="done-r"><div><div class="n">'+st.set+'</div><div class="l">Set</div></div>'+
+  '<div><div class="n" style="color:'+(st.dl>=0?"var(--ok)":"var(--warn)")+'">'+(st.dl!=null?(st.dl>=0?"+":"")+nf(st.dl,0)+"%":"—")+'</div><div class="l">Mot förra</div></div>'+
+  '<div><div class="n" style="color:var(--pr)">'+pr+'</div><div class="l">Rekord</div></div></div>'+
+  (pr?'<div class="prlist"><div class="t">Nya rekord</div><div class="i">'+st.pr.map(function(x){return "· "+esc(x);}).join("<br>")+'</div></div>':"")+
+  '<button class="btn" id="stang" style="width:100%">Klart</button>';
+ o.classList.add("show");
+ if(navigator.vibrate)navigator.vibrate(pr?[18,50,18,50,28]:[14,40,14]);
+ document.getElementById("stang").onclick=function(){o.classList.remove("show");};
+ o.onclick=function(e){if(e.target===o)o.classList.remove("show");};
+}
+function vProg(){
+ var seen={},ids=[];PROGRAM.forEach(function(d){d.ex.forEach(function(e){if(!seen[e.id]){seen[e.id]=e;ids.push(e.id);}});});
+ var rows=ids.map(function(i){return{id:i,n:nm(i,seen[i].namn),m:seen[i].mus,a:allaFor(i)};}).filter(function(r){return r.a.length;});
+ var s="",tn=totTon();
+ var nxt=MILS.filter(function(m){return m>tn;})[0]||Math.ceil(tn/100)*100+100;
+ var fore=MILS.filter(function(m){return m<=tn;}).pop()||0;
+ s+='<div class="ms"><div class="t"><div class="n">'+nf(tn,1)+' ton</div><div class="g">nästa: '+nxt+' ton</div></div>'+
+    '<div class="b"><i style="width:'+Math.max(2,Math.min(100,(tn-fore)/(nxt-fore)*100))+'%"></i></div></div>';
+ if(rows.length){
+  var best=rows.map(function(r){var v=r.a.map(function(x){return x.v;});return{u:(Math.max.apply(null,v)/v[0]-1)*100};}).sort(function(a,b){return b.u-a.u;})[0];
+  s+='<div class="grid"><div class="kpi"><div class="l">Pass</div><div class="v">'+db.pass.length+'</div></div>'+
+     '<div class="kpi"><div class="l">Veckor i rad</div><div class="v" style="color:var(--acc)">'+streak()+'</div></div>'+
+     '<div class="kpi"><div class="l">Övningar</div><div class="v">'+rows.length+'</div></div>'+
+     '<div class="kpi"><div class="l">Bäst utv.</div><div class="v" style="color:var(--ok)">+'+nf(best.u,0)+'%</div></div></div>';
+  s+='<div class="sect">Per övning</div><div class="card"><table><tr><th>Övning</th><th style="text-align:right">PR kg</th><th style="text-align:right">Bästa</th><th style="text-align:right">Utv</th><th></th></tr>';
+  rows.forEach(function(r){var v=r.a.map(function(x){return x.v;}),f=v[0],b=Math.max.apply(null,v),u=(b/f-1)*100;
+   s+='<tr><td><div style="font-weight:600">'+esc(r.n)+'</div><div style="color:var(--dim);font-size:11.5px;margin-top:2px">'+r.m+' · '+r.a.length+' pass</div></td>'+
+      '<td style="text-align:right;color:var(--pr);font-weight:650">'+nf(bastaKg(r.id))+'</td>'+
+      '<td style="text-align:right;font-weight:650">'+kf(b)+'</td>'+
+      '<td style="text-align:right"><span class="pct '+(u>.5?"u":(u<-.5?"d":"n"))+'">'+(u>0?"+":"")+nf(u,0)+'%</span></td><td style="width:76px">'+spk(v)+'</td></tr>';});
+  s+='</table></div>';
+ } else s+='<div class="empty"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A95A3" stroke-width="2" stroke-linecap="round"><path d="M3 17l6-6 4 4 7-7"/></svg></div><h3>Ingen historik än</h3><p>Logga ditt första pass så dyker kurvorna upp.</p></div>';
+ var mv={},mx=0;PROGRAM.forEach(function(d){d.ex.forEach(function(e){var c=dagCfg(d.id,e.id);mv[e.mus]=(mv[e.mus]||0)+c.set;});});
+ Object.keys(mv).forEach(function(k){if(mv[k]>mx)mx=mv[k];});
+ s+='<div class="sect">Veckovolym</div><div class="card">';
+ Object.keys(mv).sort(function(a,b){return mv[b]-mv[a];}).forEach(function(m){
+  s+='<div class="vol"><div class="vol-n">'+m+'</div><div class="vol-b"><i style="width:'+(mv[m]/mx*100)+'%"></i></div><div class="vol-v">'+mv[m]+' set</div></div>';});
+ var t=0;Object.keys(mv).forEach(function(k){t+=mv[k];});
+ return s+'</div><div class="note"><b>'+t+' set i veckan</b> om du kör alla fem dagarna.</div>';
+}
+function spk(v){if(v.length<2)return'<span style="color:var(--dim);font-size:11px">—</span>';
+ var w=72,h=24,p=3,mn=Math.min.apply(null,v),mx=Math.max.apply(null,v);if(mx-mn<1){mn-=1;mx+=1;}
+ var pt=v.map(function(x,i){return[p+i*(w-2*p)/(v.length-1),p+(1-(x-mn)/(mx-mn))*(h-2*p)];}),up=v[v.length-1]>=v[0],col=up?"#3FD47E":"#E8B339";
+ var ar="M"+pt.map(function(q){return q[0].toFixed(1)+","+q[1].toFixed(1);}).join("L")+"L"+pt[pt.length-1][0].toFixed(1)+","+h+"L"+pt[0][0].toFixed(1)+","+h+"Z";
+ return '<svg class="spk" viewBox="0 0 '+w+' '+h+'"><path d="'+ar+'" fill="'+col+'" opacity=".12"/><polyline fill="none" stroke="'+col+'" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" points="'+
+  pt.map(function(q){return q[0].toFixed(1)+","+q[1].toFixed(1);}).join(" ")+'"/><circle cx="'+pt[pt.length-1][0].toFixed(1)+'" cy="'+pt[pt.length-1][1].toFixed(1)+'" r="2.3" fill="'+col+'"/></svg>';}
+function vCfg(){
+ var s='<div class="note" style="margin:0 0 14px"><b>Ändra fritt.</b> Set, reps och vilotid per dag. Vilan är sekunder — basövningar 120, isolation 60.</div>';
+ PROGRAM.forEach(function(d,i){
+  s+='<div class="sect">Dag '+(i+1)+' · '+esc(d.namn)+'</div><div class="card"><table><tr><th>Övning</th><th style="width:50px;text-align:center">Set</th><th style="width:50px;text-align:center">Från</th><th style="width:50px;text-align:center">Till</th><th style="width:58px;text-align:center">Vila</th></tr>';
+  d.ex.forEach(function(e){var c=dagCfg(d.id,e.id);
+   s+='<tr><td><input class="ti" type="text" data-nm="'+e.id+'" value="'+esc(nm(e.id,e.namn))+'"></td>'+
+      '<td style="text-align:center"><input class="si" type="number" min="1" max="8" data-cf="'+d.id+'|'+e.id+'|set" value="'+c.set+'"></td>'+
+      '<td style="text-align:center"><input class="si" type="number" min="1" max="30" data-cf="'+d.id+'|'+e.id+'|lo" value="'+c.lo+'"></td>'+
+      '<td style="text-align:center"><input class="si" type="number" min="1" max="40" data-cf="'+d.id+'|'+e.id+'|hi" value="'+c.hi+'"></td>'+
+      '<td style="text-align:center"><input class="si" type="number" min="15" max="600" step="15" data-vila="'+d.id+'|'+e.id+'" value="'+vilaFor(d.id,e.id)+'"></td></tr>';});
+  s+='</table></div>';});
+ return s;
+}
+function vData(){
+ var n=0;PROGRAM.forEach(function(d){d.ex.forEach(function(e){if(allaFor(e.id).length)n++;});});
+ return '<div class="grid" style="grid-template-columns:1fr 1fr"><div class="kpi"><div class="l">Loggade pass</div><div class="v">'+db.pass.length+'</div></div>'+
+  '<div class="kpi"><div class="l">Total volym</div><div class="v">'+nf(totTon(),1)+'<span style="font-size:13px;color:var(--mut)"> ton</span></div></div></div>'+
+  '<div class="sect">Säkerhetskopia</div><div class="card"><div class="h2">Exportera</div><p class="hs">Allt ligger i webbläsaren på den här enheten. Exportera varje vecka.</p>'+
+  '<div class="row" style="margin-top:13px"><button class="btn" id="exp">Exportera</button><button class="btn g" id="imp">Importera</button><input type="file" id="fin" accept="application/json,.json" style="display:none"></div></div>'+
+  '<div class="sect">Farligt</div><div class="card"><div class="h2">Nollställ</div><p class="hs">Raderar alla pass och inställningar.</p><div class="row" style="margin-top:13px"><button class="btn d" id="wipe">Radera allt</button></div></div>';
+}
+function bind(){
+ document.querySelectorAll("nav button").forEach(function(b){b.onclick=function(){
+  view=b.dataset.v;document.querySelectorAll("nav button").forEach(function(x){x.className=x===b?"on":"";});render();};});
+ document.querySelectorAll("[data-dag]").forEach(function(b){b.onclick=function(){vald=b.dataset.dag;ut={};startad={};stoppaT();render();};});
+ document.querySelectorAll("input[data-ex]").forEach(function(el){
+  el.oninput=function(){
+   var id=el.dataset.ex,i=+el.dataset.i,f=el.dataset.f,c=dagCfg(vald,id),o=U(id,c.set);
+   o.sets[i][f]=el.value===""?null:+el.value;
+   if(f==="kg"&&i===0&&el.value!==""){for(var j=1;j<c.set;j++){if(o.sets[j].kg==null){o.sets[j].kg=+el.value;
+    var n=document.querySelector('input[data-ex="'+id+'"][data-i="'+j+'"][data-f="kg"]');if(n&&n!==document.activeElement)n.value=el.value;}}}
+   var nyckel=vald+"|"+id+"|"+i,st=o.sets[i];
+   if(st.kg!=null&&st.reps!=null&&!startad[nyckel]){startad[nyckel]=1;
+    startaT(vilaFor(vald,id),nm(id,dag(vald).ex.filter(function(y){return y.id===id;})[0].namn));}
+   omrakna();};});
+ var tp=document.getElementById("tp");
+ if(tp)tp.onclick=function(){if(T.kvar>0){T.kvar+=30;T.tot=Math.max(T.tot,T.kvar);visaT();}};
+ var tx=document.getElementById("tx");
+ if(tx)tx.onclick=stoppaT;
+ document.querySelectorAll(".st-n").forEach(function(n){n.style.cursor="pointer";
+  n.onclick=function(){var row=n.closest(".st"),p=row.dataset.strow.split("|"),e=dag(vald).ex.filter(function(y){return y.id===p[0];})[0];
+   startaT(vilaFor(vald,p[0]),nm(p[0],e.namn));};});
+ var sp=document.getElementById("spara");
+ if(sp)sp.onclick=function(){
+  var d=dag(vald),ex={},any=false,prs=[],nset=0,tot=0,ptot=0,prev=senaste(vald);
+  d.ex.forEach(function(e){var c=dagCfg(d.id,e.id),o=ut[e.id];if(!o)return;
+   var bKg=bastaKg(e.id),bVol=bastaVol(e.id),namnet=nm(e.id,e.namn);
+   var sets=o.sets.slice(0,c.set).map(function(s){return(s&&s.kg!=null&&s.reps!=null)?{kg:s.kg,reps:s.reps}:null;});
+   if(!sets.some(function(s){return s;}))return;
+   var maxKg=0;sets.forEach(function(s){if(s){nset++;if(s.kg>maxKg&&s.reps>=c.lo)maxKg=s.kg;}});
+   var v=sets.reduce(function(a,s){return a+(s?s.kg*s.reps:0);},0);tot+=v;
+   if(bKg>0&&maxKg>bKg)prs.push(namnet+" · "+nf(maxKg)+" kg");
+   else if(bVol>0&&v>bVol)prs.push(namnet+" · "+kf(v)+" kg volym");
+   ex[e.id]={sets:sets};any=true;});
+  if(!any){toast("Fyll i minst ett set");return;}
+  if(prev)d.ex.forEach(function(e){ptot+=vol(prev.ex[e.id]);});
+  var dt=iso(new Date());
+  db.pass=db.pass.filter(function(p){return !(p.dag===vald&&p.datum===dt);});
+  db.pass.push({dag:vald,datum:dt,ex:ex});save();ut={};startad={};stoppaT();
+  var i=PROGRAM.map(function(x){return x.id;}).indexOf(vald);vald=PROGRAM[(i+1)%5].id;
+  render();window.scrollTo({top:0,behavior:"smooth"});
+  klarRuta({vol:tot,set:nset,dl:ptot?(tot/ptot-1)*100:null,pr:prs});};
+ var rn=document.getElementById("rensa");if(rn)rn.onclick=function(){ut={};startad={};stoppaT();render();};
+ document.querySelectorAll("[data-del]").forEach(function(b){b.onclick=function(){var p=b.dataset.del.split("|");
+  if(confirm("Radera passet "+p[0]+"?")){db.pass=db.pass.filter(function(x){return !(x.datum===p[0]&&x.dag===p[1]);});save();toast("Raderat");render();}};});
+ document.querySelectorAll("[data-cf]").forEach(function(el){el.onchange=function(){
+  var p=el.dataset.cf.split("|"),k=p[0]+"."+p[1],c=dagCfg(p[0],p[1]);
+  db.cfg[k]={set:c.set,lo:c.lo,hi:c.hi};db.cfg[k][p[2]]=Math.max(1,+el.value||1);save();render();};});
+ document.querySelectorAll("[data-vila]").forEach(function(el){el.onchange=function(){
+  var p=el.dataset.vila.split("|");db.cfg[p[0]+"."+p[1]+".vila"]=Math.max(15,+el.value||60);save();toast("Vilotid sparad");};});
+ document.querySelectorAll("[data-nm]").forEach(function(el){el.onchange=function(){
+  var v=el.value.trim();if(v)db.namn[el.dataset.nm]=v;else delete db.namn[el.dataset.nm];save();toast("Sparat");render();};});
+ var ex=document.getElementById("exp");
+ if(ex)ex.onclick=function(){var b=new Blob([JSON.stringify(db,null,2)],{type:"application/json"}),a=document.createElement("a");
+  a.href=URL.createObjectURL(b);a.download="overkropp-"+iso(new Date())+".json";a.click();setTimeout(function(){URL.revokeObjectURL(a.href);},1000);};
+ var im=document.getElementById("imp"),fin=document.getElementById("fin");
+ if(im)im.onclick=function(){fin.click();};
+ if(fin)fin.onchange=function(){var f=fin.files[0];if(!f)return;var r=new FileReader();
+  r.onload=function(){try{var o=JSON.parse(r.result);if(o.pass)db.pass=o.pass;if(o.cfg)db.cfg=o.cfg;if(o.namn)db.namn=o.namn;
+   save();toast("Importerat");render();}catch(e){alert("Kunde inte läsa filen.");}};r.readAsText(f);};
+ var wp=document.getElementById("wipe");
+ if(wp)wp.onclick=function(){if(confirm("Radera alla pass och inställningar?")){db={pass:[],cfg:{},namn:{}};save();toast("Nollställt");render();}};
+}
+render();
+</script>
+</body>
+</html>
